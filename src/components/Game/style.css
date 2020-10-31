@@ -1,0 +1,31 @@
+.game-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  height: 100%;
+}
+.grid-container {
+  flex: 3;
+
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+.settings-container {
+  flex: 1;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  font-size: medium;
+  padding: 10;
+}
+.text-container {
+  flex: 1;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  font-size: medium;
+  text-align: left;
+}
