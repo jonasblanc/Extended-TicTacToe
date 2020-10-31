@@ -8,6 +8,7 @@ import { calculateWinner } from "./arrayUtilities";
 export default function Game() {
     const MIN_SIDE = 5;
     const MAX_SIDE = 25;
+    const WINNING_ALIGNMENT = 5;
 
     const [side, setSide] = useState(15);
     const [array, setArray] = useState(Array((side - 1) * (side - 1)).fill(null));
@@ -16,59 +17,54 @@ export default function Game() {
     const [status, setStatus] = useState("Press start to play !");
     const [isFinish, setIsFinish] = useState(true);
 
-    const [round, setRound] = useState(0);
-
+    /**
+     * Handle the click of a player on the board
+     * @param {*} i - position clicked
+     */
     const handleClick = (i) => {
         if (!isFinish && array[i] == null) {
-            handlePlay(i);
-        } else {
-            //alert("Please choose an empty cell - " + array[i]);
+            const newArray = array.slice();
+            newArray[i] = isCrossNext ? "X" : "O";
+            setArray(newArray);
+            setIsCrossNext(!isCrossNext);
         }
     };
 
-    const handlePlay = (i) => {
-        const newArray = array.slice();
-        newArray[i] = isCrossNext ? "X" : "O";
-        setArray(newArray);
-        setIsCrossNext(!isCrossNext);
-        setRound(round + 1);
-    };
-
+    /**
+     * Handle when the user click start button
+     * @param {*} side
+     * @param {*} firstPlayer
+     */
     const handleSubmit = (side, firstPlayer) => {
         setIsCrossNext(firstPlayer === "X");
         const grid = Array((side - 1) * (side - 1)).fill(null);
         setArray(grid);
         setIsFinish(false);
         setSide(side);
-        setRound(0);
     };
 
-    const setAndReturnWinner = () => {
-        const winner = calculateWinner(array, side, 5);
-        if (winner != null) {
-            setStatus("Winner is " + winner + " !");
-            setIsFinish(true);
-            return winner;
-        }
-        return winner;
-    };
-
-    const setUpAndPlay = () => {
-        setStatus("Next player is " + (isCrossNext ? "X" : "O"));
-        if (!isCrossNext) {
-            //alert("Round: " + round);
-            const pos = nextMoveIA(array, side, "O");
-            handleClick(pos);
-        }
-    };
-
-    useEffect(() => {
+    /**
+     * Play a round check for winner and make IA play at it's turn
+     */
+    function playRound() {
         if (!isFinish) {
-            if (setAndReturnWinner() == null) {
-                setUpAndPlay();
-                //alert("refresh" + round);
+            const winner = calculateWinner(array, side, WINNING_ALIGNMENT);
+            if (winner != null) {
+                setStatus("Winner is " + winner + " !");
+                setIsFinish(true);
+            } else {
+                setStatus("Next player is " + (isCrossNext ? "X" : "O"));
+
+                if (!isCrossNext) {
+                    const pos = nextMoveIA(array, side, "O");
+                    handleClick(pos);
+                }
             }
         }
+    }
+
+    useEffect(() => {
+        playRound();
     });
 
     return (
